@@ -1,12 +1,10 @@
 from cProfile import label
 from cgitb import text
-from curses import window
 import fractions
 from tkinter import *
 from tkinter.ttk import Combobox
 from tkcalendar import *
 import tkinter
-from xxlimited import foo 
 from PIL import Image,ImageTk
 
 #Creating the tkinker windows  
