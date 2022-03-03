@@ -1,6 +1,7 @@
 from cProfile import label
 from cgitb import text
 import fractions
+from struct import pack
 from tkinter import *
 from tkinter import messagebox
 from tkinter.ttk import Combobox
@@ -22,7 +23,7 @@ window.title("Beach Hotels")
 
 
 #This is use to place the image as a background colour
-image1= Image.open('C:\\Users\\jahei\\OneDrive\\Bureau\\project_feb\\Tourism\\images\\maldives_tropical_beach_sand_summer_palm_trees_88001_2048x1152.jpeg')
+image1= Image.open('/Users/imac-13/Desktop/Tourism/images/maldives_tropical_beach_sand_summer_palm_trees_88001_2048x1152.jpeg')
 window.geometry('2048x1152')
 background_image = ImageTk.PhotoImage(image1)
 lbl = Label(window, image=background_image)
@@ -63,13 +64,27 @@ def return2():
     frame2.pack(pady=350, padx=400)
     footer.pack(ipadx=2048, pady=60)
 
-def return
-    
-def calander1():
+def return3():
     frame5.pack_forget()
+    frame2.pack(pady=350, padx=400)
+
+#To return the first home page   
+def return4():        
+    frame6.pack_forget()
+    frame2.pack(pady=350, padx=400)
+    footer.pack(ipadx=2048, pady=60)
+
+
+def return5():      
+    frame6.pack_forget()
+    frame5.pack(pady=25,ipadx=100)
+        
+
+    
+     
+   
+   
   
-    
-    
 
 #The Frame of the main page of the application   
 frame2 = Frame(window, highlightbackground="#191970", highlightthickness=4)
@@ -247,22 +262,19 @@ def connected():
     "username": Username_entry.get(), 
     "mdp": encmdp
     }
-    print(dictornary)
-    
+  
     c = connecte.cursor()      
     c.execute("SELECT * FROM informations WHERE email=:username AND mdp=:mdp", dictornary)
     donnes = c.fetchall()
-    print(donnes)
     
     encmd = fernet.decrypt(encmdp).decode()
-    print(encmd)
     
     for i in donnes:
-        if  Username_entry.get() in i and encmdp in i:
-            messagebox.showinfo("info", "Vous êtes connecte")
+        if  Username_entry.get() in i   and encmdp in i  :
+            messagebox.showinfo("Info", "Vous êtes connecte")
             break
         else:      
-            messagebox.showerror("error", "Vous n'avez pas de compte")
+            messagebox.showerror("Error", "Vous n'avez pas de compte")
        
     connecte.commit()
     connecte.close()
@@ -293,6 +305,7 @@ destinationLabel = Label(frame5, text="Où allez-vous", font="Arial 20 ", bg="#2
 destinationLabel.pack(ipady=5, pady=5, anchor='nw')
 
 
+
 #This is the destination comboBox menu chose
 destination= Combobox(frame5, width = 45, state='readonly')
 destination ['values']= ("Akwa Beach/Assinie, Côte d'Ivoire",
@@ -304,6 +317,7 @@ destination ['values']= ("Akwa Beach/Assinie, Côte d'Ivoire",
 "Boblin la Mer hotel restaurant plage/Grand-Bassam, Côte d'Ivoire",
 "Le Koral Beach Hotel/Grand-Bassam, Côte d'Ivoire", 
 "Assoyam Beach Hôtel/Grand-Bassam, Côte d'Ivoire")
+
 destination.pack(pady=5,padx=5,anchor='nw')
 
 
@@ -314,7 +328,8 @@ def selectedc1():
 
 #I created this function to show the date selected by the user.
 def selectedc2():      
-    date2.config(text="Vous avez sélectionné cette date:" + cal1.get_date())
+    date2.config(text="Vous avez sélectionné cette date:" + cal2.get_date())
+
 
 
 #This is the arrival label  
@@ -341,7 +356,7 @@ departureLabel.pack(ipady=3, pady=3, anchor='nw')
 
 
 #This is the second calendar I created for the user to select his date from.
-cal2 = Calendar(frame5, selectmode = 'day',year = 2020, month = 3,day = 22)
+cal2 = Calendar(frame5, selectmode = 'day',year = 2022, month = 3,day = 22)
 cal2.pack(pady = 3,padx=3,anchor='nw')
 
 btn9 = Button(frame5, text="Vailde", command=selectedc2, highlightbackground="#2779b8" )
@@ -383,6 +398,7 @@ roomslabel.pack(ipady=5, pady=5, anchor='nw')
 #this is the rooms comboBox
 rooms = Combobox(frame5, width = 45, state='readonly')
 rooms['values'] = ("0","1","2","3","4","5","6","7","8","9","10","11")
+po = rooms.get()
 rooms.pack(pady=5,padx=5,anchor='nw')
 
 #this is a function i created to store all the infomations from the menu into a database.
@@ -391,11 +407,11 @@ def menudata():
     menu = sqlite3.connect('menubase.db')
     dictmenu = {
         "destination": destination.get(),
-        "Arrival": cal1.get_date(),
-        "Derputure": cal2.get_date(),
-        "Adults": adults.get(), 
-        "Children": children.get(),
-        "Rooms": rooms.get()
+        "arrival": cal1.get_date(),
+        "deputure": cal2.get_date(),
+        "adults": adults.get(), 
+        "children": children.get(),
+        "rooms": rooms.get()
     }
 
     if destination.get() == '' or adults.get() == '' or children.get() == '' or rooms.get() == '':
@@ -403,8 +419,9 @@ def menudata():
     elif destination.get().isspace() == "" or adults.get().isspace() == '' or children.get().isspace() == '' or rooms.get().isspace() == '':
         messagebox.showerror("Error", "Veuillez saisir le champs")
     else: 
+        
         m = menu.cursor()
-        m.execute("""CREATE TABLE IF NOT EXIST menudata(
+        m.execute("""CREATE TABLE IF NOT EXISTS menudata(
                 destination text, 
                 arrival text, 
                 deputure text, 
@@ -413,18 +430,114 @@ def menudata():
                 rooms integer
             )""")
 
-        m.execute("INSERT INTO informations VALUES(:destination, :arrival, :deputure, :adults, :children, :rooms)", dictmenu)
+        m.execute("INSERT INTO menudata VALUES(:destination, :arrival, :deputure, :adults, :children, :rooms)", dictmenu)
 
         menu.commit()
         menu.close()
-
+        destination.set('')
+        adults.set('')
+        children.set('')
+        rooms.set('')
+        frame5.pack_forget()
+        frame6.pack(pady=100, ipadx=20)
 
 
 reserve = Button(frame5,text="Reservée" , command=menudata, font="Arial 14")
 reserve.pack(ipady=5, pady=10)
 
-quite= Button(frame5, text="Quitter", font="Arial 14")
+quite= Button(frame5, text="Quitter", command=return3, font="Arial 14")
 quite.pack(pady=3, ipadx=5)
+
+def destiny(): 
+    desti.config(text="Vous allez à " + destination.get())
+    btn12.pack_forget()
+    
+def ert():           
+    arri.configure(text="Le jour de votre arrivée est " + cal1.get_date())
+    btn13.pack_forget()
+
+def ter():
+    dept.configure(text="Le jour de votre départ est " + cal2.get_date())
+    btn14.pack_forget()
+    
+def yot():      
+    adus.configure(text="Il y a " + adults.get() + " adultes ")
+    btn15.pack_forget()
+
+def reel():    
+    chi.configure(text="Il y a " + children.get() + " enfants ")
+    btn16.pack_forget()
+    
+def real():    
+    rombo.configure(text="Vous avez demandé " + rooms.get() + "chambres")
+    btn17.pack_forget()
+    
+    
+
+frame6 = Frame(window, highlightbackground="#191970", highlightthickness=5)
+frame6.configure(bg="#2779b8")
+
+Dest = Label(frame6, text="Votre Destination" , font="Arial 20", bg="#2779b8")
+Dest.pack(pady=5, anchor='nw')
+
+desti= Label(frame6, text=" ", font="Arial 16", bg="#2779b8")
+desti.pack(pady=5, anchor='nw')
+
+btn12 = Button(frame6,text="Voir",font="Arial 16", command=destiny)
+btn12.pack(pady=5,anchor='nw')
+
+arr = Label(frame6, text='Le jour de votre arrivée ', font="Arial 20", bg="#2779b8")
+arr.pack(pady=5, anchor='nw')
+
+arri = Label(frame6, text=" ", bg="#2779b8", font="Arial 16")
+arri.pack(pady=5, anchor='nw')
+
+btn13 = Button(frame6,text="Voir",font="Arial 16",command=ert)
+btn13.pack(pady=5, anchor='nw')
+
+
+dep = Label(frame6, text="Votre Jour De Départ", font="Arial 20", bg="#2779b8")
+dep.pack(pady=5, anchor='nw')
+
+dept = Label(frame6, text=" ", bg="#2779b8", font="Arial 16" )
+dept.pack(pady=5, anchor='nw')
+
+btn14 = Button(frame6,text="Voir",font="Arial 16", command=ter)
+btn14.pack(pady=5, anchor='nw')
+
+adul = Label(frame6, text="Nombre D'Adults",font="Arial 20", bg="#2779b8" )
+adul.pack(pady=5, anchor='nw')
+
+adus = Label(frame6, text=" ", font="Arial 16", bg="#2779b8")
+adus.pack(pady=5, anchor='nw')
+
+btn15 = Button(frame6,text="Voir",font="Arial 16",command=yot )
+btn15.pack(pady=5, anchor='nw')
+
+child = Label(frame6, text="Nombre D'Enfants", font="Arial 20", bg="#2779b8")
+child.pack(pady=5, anchor='nw')
+
+chi = Label(frame6, text=" ", font="Arial 16", bg="#2779b8")
+chi.pack(pady=5, anchor='nw')
+
+btn16 = Button(frame6,text="Voir",font="Arial 16", command=reel)
+btn16.pack(pady=5, anchor='nw')
+
+rom = Label(frame6, text="Chambres", font="Arial 20", bg="#2779b8")
+rom.pack(pady=5, anchor='nw')
+
+rombo = Label(frame6, text=" ", font="Arial 16", bg="#2779b8",)
+rombo.pack(pady=5, anchor='nw')
+
+btn17 = Button(frame6,text="Voir",font="Arial 16", command=real)
+btn17.pack(pady=5, anchor='nw')
+
+btn10 = Button(frame6, text="Faire une autre réservation", command=return5, font="Arial 15")
+btn10.pack(pady=10, ipady=3)
+
+btn11 = Button(frame6, text="Se Déconnecte", command=return4, font="Arial 15")
+btn11.pack(pady=10, ipady=3)
+
 
 
 
